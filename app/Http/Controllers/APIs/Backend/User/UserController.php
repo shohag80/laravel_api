@@ -6,6 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Resource;
 use Illuminate\Http\Request;
 
+/**
+ * @author Md. Shohag Hossain <mdshohaghossain8080@gmail.com>
+ * @since 17.04.2025
+ */
 class UserController extends Controller
 {
     /**

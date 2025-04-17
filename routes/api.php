@@ -16,4 +16,6 @@ Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:api')->group(function () {
     Route::apiResource('/user', UserController::class);
+
+    Route::post('/logout', [AuthController::class, 'logout']);
 });
