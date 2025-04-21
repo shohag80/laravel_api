@@ -63,13 +63,13 @@ class AuthController extends Controller
         }
 
         if (!Auth::attempt($request->only('email', 'password'))) {
-            return response()->json(['message' => 'Unauthorized'], 401);
+            return (new ErrorResource([], 'Invalid email or password!', 401))->response()->setStatusCode(401);
         }
 
         $user = Auth::user();
         $user->token = $user->createToken('authToken')->accessToken;
 
-        return (new Resource($user, 'You are successfully login!', 201))->response()->setStatusCode(200);
+        return (new Resource($user, 'You are successfully login!', 200))->response()->setStatusCode(200);
     }
 
     /**
