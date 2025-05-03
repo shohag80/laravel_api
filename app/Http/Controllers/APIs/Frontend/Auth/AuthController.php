@@ -41,7 +41,7 @@ class AuthController extends Controller
             'password' => bcrypt($request->password),
         ]);
 
-        return (new Resource($user, 'You are successfully register!', 201))->response()->setStatusCode(200);
+        return (new Resource($user, 'You are successfully registerd!', 201))->response()->setStatusCode(200);
     }
 
     /**
