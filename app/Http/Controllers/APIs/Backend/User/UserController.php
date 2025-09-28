@@ -62,7 +62,13 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $user = User::where('id', $id)->first();
+
+        if ($user == null) {
+            return (new ErrorResource($user, "User data not found!", 404))->response()->setStatusCode(404);
+        }
+
+        return (new Resource($user, "User data fatch successfully!", 200))->response()->setStatusCode(200);
     }
 
     /**
@@ -84,11 +90,28 @@ class UserController extends Controller
             return (new ErrorResource($user, "Requested data not found!", 404))->response()->setStatusCode(404);
         }
 
+        $validation = Validator::make($request->all(), [
+            'name'      => 'nullable|string|max:255',
+            'email'     => 'nullable|string|email|max:255',
+            'password'  => 'nullable|string|min:8|confirmed',
+            'active_status'  => 'nullable|boolean',
+        ]);
+        
+        if ($validation->fails()) {
+            $msg = collect($validation->errors()->messages())->flatten()->filter()->values()->toArray();
+            return (new ErrorResource($msg, 'Please enter your valid info!', 400))->response()->setStatusCode(400);
+        }
+
+        $user_password = bcrypt($request->password) ?? $user->password;
+        $user_email = $request->email == $user->email ? $user->email : $request->email;
+        $user_active_status = $request->active_status == 1 ? 1 : 0;
+        
         try {
             $update_data = $user->update([
                 'name'      => $request->name,
-                'email'     => $request->email,
-                'password'  => bcrypt($request->password),
+                'email'     => $user_email,
+                'password'  => $user_password,
+                'active_status' => $user_active_status
             ]);
             $user->update_status = $update_data;
 
@@ -120,5 +143,21 @@ class UserController extends Controller
             //throw $th;
             return (new ErrorResource([], "Oops! Something want wrong! Please, try again.", 500))->response()->setStatusCode(500);
         }
+    }
+
+    /**
+     * user function
+     *
+     * @return array
+     */
+    public function getAllUsers()
+    {
+        $all_users = User::all();
+
+        if ($all_users == null) {
+            return (new ErrorResource($all_users, "User data not found!", 404))->response()->setStatusCode(404);
+        }
+
+        return (new Resource($all_users, "User data updated successfully!", 200))->response()->setStatusCode(200);
     }
 }
